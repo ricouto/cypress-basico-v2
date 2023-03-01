@@ -139,20 +139,76 @@ describe("Central de Atendimento ao Cliente TAT", function () {
   });
 
   context("Marcando e desmarcando inputs do tipo checkbox", () => {
-    it.only('[extra 0] Marcar ambos checkboxes e depois desmarca o último', function () {
+    it("[extra 0] Marcar ambos checkboxes e depois desmarca o último", function () {
       cy.get('[type="checkbox"]')
         .check()
         .should("be.checked")
+        .last()
+        .uncheck()
+        .should("not.be.checked");
     });
 
-    it("[extra 1] Marcar cada tipo de atendimento", function () {
-      cy.get('[type="radio"]')
-        .should("have.length", 3)
-        .each(function ($radio) {
-          cy.wrap($radio).check();
-          cy.wrap($radio).should("be.checked");
+    it("[extra 1] Exibir mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário", function () {
+      cy.get("#firstName").type(nome);
+      cy.get("#lastName").type(sobrenome);
+      cy.get("#email").type(email);
+      cy.get("#open-text-area").type(comentario, { delay: 0 });
+      cy.get("#phone-checkbox").check();
+      cy.get(".button").click();
+      cy.get(".error")
+        .should("be.visible")
+        .and("contain", "Valide os campos obrigatórios!");
+    });
+  });
+
+  context("Fazendo upload de arquivos", () => {
+    it("[extra 0] Selecionar um arquivo da pasta fixtures", function () {
+      cy.get('input[type="file"]')
+        .should("not.have.value")
+        .selectFile("cypress/fixtures/example.json")
+        .then((input) => {
+          expect(input[0].files[0].name).to.eq("example.json");
+        });
+    });
+
+    it("[extra 1] Selecionar um arquivo simulando um drag-and-drop", function () {
+      cy.get("#file-upload")
+        .should("not.have.value")
+        .selectFile("cypress/fixtures/example.json", { action: "drag-drop" })
+        .then((input) => {
+          expect(input[0].files[0].name).to.eq("example.json");
+        });
+    });
+
+    it("[extra 2] Selecionar um arquivo utilizando uma fixture para a qual foi dada um alias", function () {
+      cy.fixture("example.json", { encoding: null }).as("myFile");
+      cy.get("#file-upload")
+        .should("not.have.value")
+        .selectFile("@myFile")
+        .then((input) => {
+          expect(input[0].files[0].name).to.eq("example.json");
         });
     });
   });
 
+  context('Lidando com links que abrem em outra aba', () => {
+    it('[extra 0] Verificar que a política de privacidade abre em outra aba sem a necessidade de um clique', () => {
+      cy.get('#privacy a').should('have.attr', 'target', '_blank')
+    });
+
+    it('[extra 1] Acessar a página da política de privacidade removendo o target e então clicando no link', () => {
+      cy.get('#privacy a').invoke('removeAttr', 'target').click()
+      cy.get('#title').should('have.text', 'CAC TAT - Política de privacidade')
+      cy.contains('Talking About Testing').should('be.visible')
+    });
+
+    it('[extra 2] Testar a página da política de privacidade de forma independente', () => {
+      cy.visit('./src/privacy.html')
+      cy.get('#title').should('have.text', 'CAC TAT - Política de privacidade')
+      cy.contains('Talking About Testing').should('be.visible')
+    });
+  });
+
+  context('Simulando o viewport de um dispositivo móvel', () => {
+  });
 });
