@@ -28,8 +28,12 @@ describe("Central de Atendimento ao Cliente TAT", function () {
       cy.get("#email").type(email);
       cy.get("#open-text-area").type(sobrenome, { delay: 0 });
       cy.get(".button").click();
-      cy.get(".success").should("be.visible");
-      cy.get(".success").should("contain", "Mensagem enviada com sucesso.");
+      //cy.get(".success").should("be.visible").and('have.text', 'Mensagem enviada com sucesso.');
+      cy.get(".success").contains('Mensagem enviada com sucesso.').should('be.visible')
+      //cy.contains('.success', 'Mensagem enviada com sucesso.').should('be.visible')
+      //cy.get(".success").should("be.visible", "Mensagem enviada com sucesso.");
+      cy.contains('.success', 'Mensagem enviada com sucesso.').should('not.be.visible')
+      //cy.get(".success").should("not.be.visible", "Mensagem enviada com sucesso.");
     });
 
     it("[extra 0] Preencher os campos obrigatórios e envia o formulário #2", function () {
@@ -63,6 +67,25 @@ describe("Central de Atendimento ao Cliente TAT", function () {
       cy.get(".error")
         .should("be.visible")
         .and("contain", "Valide os campos obrigatórios!");
+    });
+
+    it.only("[extra 2] Usando Clock() e Tick() para exibir mensagem de erro ao submeter o formulário", function () {
+      cy.clock()
+      cy.get("#firstName").type(nome);
+      cy.get("#lastName").type(sobrenome);
+      cy.get("#email").type(nome + "@envioerro,com"); //email invalido
+      cy.get("#open-text-area").type(comentario, { delay: 0 });
+      cy.get(".button").click();
+      
+      cy.get(".error")
+      .should("be.visible")
+      .and("contain", "Valide os campos obrigatórios!");
+      
+      cy.tick(3000)
+      cy.get(".error")
+      .should("not.be.visible")
+      //.and("contain", "Valide os campos obrigatórios!");
+
     });
 
     it("[extra 3] Preencher com valor não-numérico deverá continuar vazio", function () {
