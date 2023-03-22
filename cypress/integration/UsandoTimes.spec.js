@@ -74,7 +74,7 @@ describe("Central de Atendimento ao Cliente TAT", () => {
     });
   });
 
-  it.only("[extra 4] Faz uma requisição HTTP", () => {
+  it("[extra 4] Faz uma requisição HTTP", () => {
     cy.request({
       method: "GET",
       url: "https://cac-tat.s3.eu-central-1.amazonaws.com/index.html",
@@ -84,4 +84,13 @@ describe("Central de Atendimento ao Cliente TAT", () => {
       expect(response.body).to.include("CAC TAT")
     });
   });
+
+  it("[Desafio] Encontre o gato", () => {
+      cy.get("#cat")
+        .should("not.be.visible")
+        .invoke("show")
+        .should("be.visible")
+        .invoke("hide")
+        .should("not.be.visible");
+    });
 });
