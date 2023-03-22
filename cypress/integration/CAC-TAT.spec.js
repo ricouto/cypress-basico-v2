@@ -69,7 +69,7 @@ describe("Central de Atendimento ao Cliente TAT", function () {
         .and("contain", "Valide os campos obrigatórios!");
     });
 
-    it.only("[extra 2] Usando Clock() e Tick() para exibir mensagem de erro ao submeter o formulário", function () {
+    it("[extra 2] Usando Clock() e Tick() para exibir mensagem de erro ao submeter o formulário", function () {
       cy.clock()
       cy.get("#firstName").type(nome);
       cy.get("#lastName").type(sobrenome);

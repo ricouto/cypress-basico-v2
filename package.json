@@ -6,7 +6,8 @@
   "scripts": {
     "cypress:open": "cypress open",
     "cypress:mobile": "cypress open --config viewportWidth=410 viewportHeight=860",
-    "cypress:headless": "cypress run --headless --browser electron --config viewportWidth=410 viewportHeight=860"
+    "cypress:headless": "cypress run --headless --browser electron --config viewportWidth=410 viewportHeight=860",
+    "cypress:execute": "cypress run --spec cypress/integration/*.spec.js --config video=false"
   },
   "repository": {
     "type": "git",
