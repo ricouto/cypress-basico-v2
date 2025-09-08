@@ -1,0 +1,37 @@
+name: Rerun workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        required: true
+jobs:
+  rerun:
+    runs-on: self-hosted
+    container:
+      image: cypress/browsers:node18.12.0-chrome107
+      options: "-u root:root"
+      
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "[Custom] Add permission on Cypress"
+        shell: bash
+        run: chmod 777 ./cypress -R
+
+      - name: Execucao Suite TAT
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run cy:run:ci
+
+    steps:
+      - name: rerun ${{ inputs.run_id }}
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_DEBUG: api
+        run: |
+          gh run watch ${{ inputs.run_id }} > /dev/null 2>&1
+          gh run rerun ${{ inputs.run_id }} --failed
