@@ -28,7 +28,7 @@ jobs:
       - name: Execucao Suite TAT
         uses: cypress-io/github-action@v6
         with:
-          command: npm run cypress:execute
+          command: npm run cypress:execute-error
 
   rerun-on-failure:
     needs: suite-tat # Replace with your job name

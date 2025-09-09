@@ -7,7 +7,8 @@
     "cypress:open": "cypress open",
     "cypress:mobile": "cypress open --config viewportWidth=410 viewportHeight=860",
     "cypress:headless": "cypress run --headless --browser electron --config viewportWidth=410 viewportHeight=860",
-    "cypress:execute": "cypress run --spec cypress/e2e/CAC-TAT.spec.cy.js --config video=false"
+    "cypress:execute": "cypress run --spec cypress/e2e/CAC-TAT.spec.cy.js --config video=false",
+    "cypress:execute-error": "cypress run --spec cypress/e2e/CAC-TAT-Error.spec.cy.js --config video=false"
   },
   "repository": {
     "type": "git",
