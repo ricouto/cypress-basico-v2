@@ -56,7 +56,6 @@ jobs:
           with:
             command: npm run cypress:execute
 
-      steps:
         - env:
             GH_REPO: ${{ github.repository }}
             GH_TOKEN: ${{ github.token }}
