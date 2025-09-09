@@ -1,58 +1,62 @@
 name: CI CAC-TAT
-'on':
+
+on:
   schedule:
-    - cron: 0 14 * * 1-5
+    - cron: "0 14 * * 1-5"
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main] # Adicionado para especificar branches
   workflow_dispatch:
     inputs:
       dispatcher:
-        description: Iniciador do workflow
+        description: 'Iniciador do workflow'
         required: false
-        default: manual
-				
+        default: 'manual'
+
 jobs:
   suite-tat:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04 # Versão atualizada
     container:
-      image: 'cypress/browsers:node18.12.0-chrome107'
-      options: '-u root:root'
+      image: cypress/browsers:node18.12.0-chrome107
+      options: "-u root:root"
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: '[Custom] Add permission on Cypress'
-        shell: bash
-        run: chmod 777 ./cypress -R
-      - name: Execucao Suite TAT
-        uses: cypress-io/github-action@v6
-        with:
-          command: 'npm run cypress:execute'
 
-  rerun-on-failure:
-    needs: suite-tat
-    if: failure() && fromJSON(github.run_attempt) < 3
-    runs-on: ubuntu-20.04
-    container:
-      image: 'cypress/browsers:node18.12.0-chrome107'
-      options: '-u root:root'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: '[Custom] Add permission on Cypress'
+      - name: "[Custom] Add permission on Cypress"
         shell: bash
-        run: chmod 777 ./cypress -R
+        run: chmod 777 ./cypress -R # Ponto de atenção para segurança
+
       - name: Execucao Suite TAT
         uses: cypress-io/github-action@v6
         with:
-          command: 'npm run cypress:execute'
-      - env:
-          GH_REPO: '${{ github.repository }}'
-          GH_TOKEN: '${{ github.token }}'
-          GH_DEBUG: api
-        run: 'gh workflow run rerun.yml -F run_id=${{ github.run_id }}'
+          command: npm run cypress:execute
+
+	rerun-on-failure:
+		needs: suite-tat
+		if: failure() && fromJSON(github.run_attempt) < 3
+		runs-on: ubuntu-22.04
+		container:
+			image: cypress/browsers:node18.12.0-chrome107
+			options: -u root:root
+		steps:
+			- uses: actions/checkout@v4
+				with:
+					fetch-depth: 0
+					
+			- name: "[Custom] Add permission on Cypress"
+				shell: bash
+				run: chmod 777 ./cypress -R
+
+			- name: Execucao Suite TAT
+				uses: cypress-io/github-action@v6
+				with:
+					command: npm run cypress:execute
+
+			- env:
+					GH_REPO: ${{ github.repository }}
+					GH_TOKEN: ${{ github.token }}
+					GH_DEBUG: api
+				run: gh workflow run rerun.yml -F run_id=${{ github.run_id }
