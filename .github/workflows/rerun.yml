@@ -26,7 +26,6 @@ jobs:
         with:
           command: npm run cy:run:ci
 
-    steps:
       - name: rerun ${{ inputs.run_id }}
         env:
           GH_REPO: ${{ github.repository }}
