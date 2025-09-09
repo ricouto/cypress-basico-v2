@@ -1,0 +1,63 @@
+name: CI CAC-TAT
+
+on:
+  schedule:
+  # run at *minute  *hours *month *months of the years *days of week
+  - cron: "0 14 * * 1-5"
+  push:
+    branches: [main]
+  pull_request:
+
+  workflow_dispatch:
+    inputs:
+      dispatcher:
+        description: 'Iniciador do workflow'
+        required: false
+        default: 'manual'
+
+jobs:
+  suite-tat:
+    runs-on: ubuntu-20.04
+    container:
+      image: cypress/browsers:node18.12.0-chrome107
+      options: "-u root:root"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "[Custom] Add permission on Cypress"
+        shell: bash
+        run: chmod 777 ./cypress -R
+
+      - name: Execucao Suite TAT
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run cypress:execute
+
+  rerun-on-failure:
+      needs: suite-tat # Replace with your job name
+      if: failure() && fromJSON(github.run_attempt) < 3
+      runs-on: ubuntu-20.04
+      container:
+        image: cypress/browsers:node18.12.0-chrome107
+        options: "-u root:root"
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+
+        - name: "[Custom] Add permission on Cypress"
+          shell: bash
+          run: chmod 777 ./cypress -R
+
+        - name: Execucao Suite TAT
+          uses: cypress-io/github-action@v6
+          with:
+            command: npm run cypress:execute
+
+        - env:
+            GH_REPO: ${{ github.repository }}
+            GH_TOKEN: ${{ github.token }}
+            GH_DEBUG: api
+          run: gh workflow run rerun.yml -F run_id=${{ github.run_id }}
