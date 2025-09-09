@@ -12,13 +12,12 @@ jobs:
     container:
       image: cypress/browsers:node18.12.0-chrome107
       options: "-u root:root"
-      
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Execucao Suite TAT
+      - name: Execucao ReRun Suite TAT
         uses: cypress-io/github-action@v6
         with:
           command: npm run cypress:execute
