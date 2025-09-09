@@ -38,7 +38,7 @@ jobs:
   rerun-on-failure:
       needs: suite-tat # Replace with your job name
       if: failure() && fromJSON(github.run_attempt) < 3
-      runs-on: self-hosted
+      runs-on: ubuntu-20.04
       container:
         image: cypress/browsers:node18.12.0-chrome107
         options: "-u root:root"
