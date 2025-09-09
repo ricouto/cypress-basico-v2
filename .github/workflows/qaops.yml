@@ -33,7 +33,6 @@ jobs:
   rerun-on-failure:
     needs: suite-tat # Replace with your job name
     if: failure() && fromJSON(github.run_attempt) < 3
-    runs-on: ubuntu-22.04
     steps:
       - env:
           GH_REPO: ${{ github.repository }}
