@@ -35,30 +35,30 @@ jobs:
         with:
           command: npm run cypress:execute
 
-rerun-on-failure:
-    needs: suite-tat # Replace with your job name
-    if: failure() && fromJSON(github.run_attempt) < 3
-    runs-on: self-hosted
-    container:
-      image: cypress/browsers:node18.12.0-chrome107
-      options: "-u root:root"
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  rerun-on-failure:
+      needs: suite-tat # Replace with your job name
+      if: failure() && fromJSON(github.run_attempt) < 3
+      runs-on: self-hosted
+      container:
+        image: cypress/browsers:node18.12.0-chrome107
+        options: "-u root:root"
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
 
-      - name: "[Custom] Add permission on Cypress"
-        shell: bash
-        run: chmod 777 ./cypress -R
+        - name: "[Custom] Add permission on Cypress"
+          shell: bash
+          run: chmod 777 ./cypress -R
 
-      - name: Execucao Suite TAT
-        uses: cypress-io/github-action@v6
-        with:
-          command: npm run cypress:execute
+        - name: Execucao Suite TAT
+          uses: cypress-io/github-action@v6
+          with:
+            command: npm run cypress:execute
 
-    steps:
-      - env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-          GH_DEBUG: api
-        run: gh workflow run rerun.yml -F run_id=${{ github.run_id }}
+      steps:
+        - env:
+            GH_REPO: ${{ github.repository }}
+            GH_TOKEN: ${{ github.token }}
+            GH_DEBUG: api
+          run: gh workflow run rerun.yml -F run_id=${{ github.run_id }}
